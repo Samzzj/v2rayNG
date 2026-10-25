@@ -48,7 +48,7 @@ fun MainTopBar(
     val maxMenuHeight = LocalConfiguration.current.screenHeightDp.dp - statusBarHeight - navBarHeight - 20.dp
 
     AppTopBar(
-        title = stringResource(R.string.title_server),
+        title = "v2rayNG",
         onBackClick = {},
         isLoading = isLoading,
         isSearchActive = showSearch,
@@ -56,6 +56,7 @@ fun MainTopBar(
         onSearchQueryChange = onSearchQueryChange,
         onSearchClose = onSearchClose,
         searchPlaceholder = stringResource(R.string.menu_item_search),
+        glass = true,
         navigationIcon = {
             if (showSearch) {
                 IconButton(onClick = onSearchClose) {

@@ -4,7 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,10 +20,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +46,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -73,9 +80,12 @@ fun AppTopBar(
     onSearchClose: () -> Unit = {},
     searchPlaceholder: String? = null,
     navigationIcon: @Composable (() -> Unit)? = null,
+    glass: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    Column {
+    val cardShape = RoundedCornerShape(22.dp)
+
+    val barContent: @Composable (WindowInsets) -> Unit = { insets ->
         TopAppBar(
             title = {
                 if (isSearchActive) {
@@ -101,6 +111,7 @@ fun AppTopBar(
                 }
             },
             actions = actions,
+            windowInsets = insets,
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.Transparent,
                 titleContentColor = MaterialTheme.colorScheme.onSurface,
@@ -108,6 +119,31 @@ fun AppTopBar(
                 actionIconContentColor = MaterialTheme.colorScheme.onSurface
             )
         )
+    }
+
+    Column {
+        if (glass) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(start = 10.dp, end = 10.dp, top = 6.dp, bottom = 4.dp)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = cardShape,
+                        clip = false,
+                        ambientColor = Color(0x14000000),
+                        spotColor = Color(0x24000000)
+                    )
+                    .clip(cardShape)
+                    .background(Color(0x99FFFFFF))
+                    .border(width = 1.dp, color = Color(0xCCFFFFFF), shape = cardShape)
+            ) {
+                barContent(WindowInsets(0, 0, 0, 0))
+            }
+        } else {
+            barContent(TopAppBarDefaults.windowInsets)
+        }
         AnimatedVisibility(
             visible = isLoading,
             enter = expandVertically(),
