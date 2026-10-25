@@ -28,40 +28,40 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 private val LightColor = lightColorScheme(
-    primary = Color(0xFF000000), // Black
+    primary = Color(0xFF007AFF), // iOS Blue
     onPrimary = Color(0xFFFFFFFF), // White
-    primaryContainer = Color(0xFFE0E0E0), // Light Gray
-    onPrimaryContainer = Color(0xFF000000), // Black
-    secondary = Color(0xFFf97910), // Orange
+    primaryContainer = Color(0xFFE6F2FF), // Pale iOS Blue
+    onPrimaryContainer = Color(0xFF00305C), // Deep Blue
+    secondary = Color(0xFFF97910), // Orange (brand accent kept)
     onSecondary = Color(0xFFFFFFFF), // White
-    secondaryContainer = Color(0xFFFFE8D6), // Pale Orange
-    onSecondaryContainer = Color(0xFF2B1700), // Dark Brown
-    tertiary = Color(0xFF009966), // Green
+    secondaryContainer = Color(0xFFFFF0E2), // Pale Orange
+    onSecondaryContainer = Color(0xFF4E2600), // Dark Brown
+    tertiary = Color(0xFF34C759), // iOS Green
     onTertiary = Color(0xFFFFFFFF), // White
-    tertiaryContainer = Color(0xFFA0F2D0), // Light Green
-    onTertiaryContainer = Color(0xFF00201A), // Dark Teal
-    error = Color(0xFFBA1A1A), // Red
-    errorContainer = Color(0xFFFFDAD6), // Light Red
+    tertiaryContainer = Color(0xFFE4F8E8), // Pale Green
+    onTertiaryContainer = Color(0xFF00390F), // Deep Green
+    error = Color(0xFFFF3B30), // iOS Red
+    errorContainer = Color(0xFFFFE9E7), // Pale Red
     onError = Color(0xFFFFFFFF), // White
-    onErrorContainer = Color(0xFF410002), // Dark Red
-    background = Color(0xFFFFFFFF), // White
+    onErrorContainer = Color(0xFF5C0A06), // Deep Red
+    background = Color(0xFFF7F9FC), // Pearl White base
     onBackground = Color(0xFF1C1B1F), // Near Black
-    surface = Color(0xFFFFFFFF), // White
+    surface = Color(0xFFFFFFFF), // Pure White Glass
     onSurface = Color(0xFF1C1B1F), // Near Black
-    surfaceVariant = Color(0xFFE7E0EC), // Light Purple Gray
-    onSurfaceVariant = Color(0xFF49454F), // Dark Gray
-    outline = Color(0xFF79747E), // Medium Gray
-    outlineVariant = Color(0xFFCAC4D0), // Light Gray
-    inverseSurface = Color(0xFF313033), // Dark Gray
-    inverseOnSurface = Color(0xFFF4EFF4), // Very Light Gray
-    inversePrimary = Color(0xFFC0C0C0), // Silver Gray
+    surfaceVariant = Color(0xFFEFF3F9), // Mist White
+    onSurfaceVariant = Color(0xFF5A6473), // Cool Gray
+    outline = Color(0xFFDDE4EE), // Hairline Glass Edge
+    outlineVariant = Color(0xFFEEF2F8), // Ultra Light Edge
+    inverseSurface = Color(0xFF2C2C2E), // iOS Dark Gray
+    inverseOnSurface = Color(0xFFF7F9FC), // Pearl White
+    inversePrimary = Color(0xFF66B0FF), // Light iOS Blue
     scrim = Color(0xFF000000), // Black
-    surfaceTint = Color(0xFF000000), // Black
-    surfaceContainerLowest = Color(0xFFFFFFFF), // White
-    surfaceContainerLow = Color(0xFFF7F7F7), // Very Light Gray
-    surfaceContainer = Color(0xFFF1F1F1), // Light Gray
-    surfaceContainerHigh = Color(0xFFEBEBEB), // Light Gray
-    surfaceContainerHighest = Color(0xFFE5E5E5), // Light Gray
+    surfaceTint = Color(0xFFFFFFFF), // Pure White: no elevation darkening
+    surfaceContainerLowest = Color(0xFFFFFFFF), // Pure White
+    surfaceContainerLow = Color(0xFFFBFCFE), // Glass White
+    surfaceContainer = Color(0xFFF5F8FC), // Frosted White
+    surfaceContainerHigh = Color(0xFFEFF4FA), // Frosted White
+    surfaceContainerHighest = Color(0xFFE9F0F8), // Frosted White
 )
 
 private val DarkColor = darkColorScheme(
@@ -127,7 +127,7 @@ object ThemeManager {
     val themeMode: StateFlow<String> = _themeMode.asStateFlow()
 
     private val _dynamicColorEnabled = MutableStateFlow(
-        MmkvManager.decodeSettingsBool(AppConfig.PREF_DYNAMIC_COLOR, true)
+        MmkvManager.decodeSettingsBool(AppConfig.PREF_DYNAMIC_COLOR, false)
     )
     val dynamicColorEnabled: StateFlow<Boolean> = _dynamicColorEnabled.asStateFlow()
 
@@ -145,7 +145,7 @@ object ThemeManager {
         _themeMode.value =
             MmkvManager.decodeSettingsString(AppConfig.PREF_UI_MODE_NIGHT, "0") ?: "0"
         _dynamicColorEnabled.value =
-            MmkvManager.decodeSettingsBool(AppConfig.PREF_DYNAMIC_COLOR, true)
+            MmkvManager.decodeSettingsBool(AppConfig.PREF_DYNAMIC_COLOR, false)
     }
 }
 
@@ -155,7 +155,7 @@ fun resolveDarkTheme(): Boolean {
     return when (mode) {
         "1" -> false
         "2" -> true
-        else -> isSystemInDarkTheme()
+        else -> false // forced pure-white glass even when system is dark
     }
 }
 
