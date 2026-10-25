@@ -26,7 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.v2ray.ang.dto.entities.ProfileItem
 import com.v2ray.ang.ui.compose.LocalDarkTheme
@@ -53,6 +57,7 @@ fun MainScreen(
     val isDarkTheme = LocalDarkTheme.current
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val hazeState = remember { HazeState() }
     var showSearch by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var showDelAllConfirm by remember { mutableStateOf(false) }
@@ -149,6 +154,7 @@ fun MainScreen(
             )
         }
     ) {
+        Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
             topBar = {
@@ -184,14 +190,6 @@ fun MainScreen(
                     }
                 )
             },
-            bottomBar = {
-                MainBottomBar(
-                    displayText = displayText,
-                    isRunning = isRunning,
-                    isDarkTheme = isDarkTheme,
-                    onAction = onAction
-                )
-            },
             floatingActionButton = {},
         ) { innerPadding ->
             val layoutDirection = LocalLayoutDirection.current
@@ -200,6 +198,7 @@ fun MainScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .hazeSource(state = hazeState)
                         .padding(innerPadding)
                 ) {
                     if (groups.size > 1) {
@@ -258,6 +257,16 @@ fun MainScreen(
                     }
                 }
             }
+        }
+
+        MainBottomBar(
+            displayText = displayText,
+            isRunning = isRunning,
+            isDarkTheme = isDarkTheme,
+            hazeState = hazeState,
+            onAction = onAction,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
         }
     }
 }
