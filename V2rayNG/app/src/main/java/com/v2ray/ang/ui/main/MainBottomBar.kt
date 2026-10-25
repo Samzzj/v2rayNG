@@ -70,7 +70,7 @@ fun MainBottomBar(
         }
     }
 
-    val pillShape = RoundedCornerShape(30.dp)
+    val pillShape = RoundedCornerShape(34.dp)
 
     Box(
         modifier = modifier
@@ -85,13 +85,13 @@ fun MainBottomBar(
                 .hazeEffect(
                     state = hazeState,
                     style = HazeStyle(
-                        backgroundColor = Color(0xCCFFFFFF),
-                        tint = HazeTint(Color(0x40FFFFFF)),
-                        blurRadius = 30.dp,
-                        noiseFactor = 0.02f
+                        backgroundColor = Color(0x8CFFFFFF),
+                        tint = HazeTint(Color(0x2EFFFFFF)),
+                        blurRadius = 42.dp,
+                        noiseFactor = 0.03f
                     )
                 )
-                .border(width = 1.dp, color = Color(0x99FFFFFF), shape = pillShape)
+                .border(width = 1.2.dp, color = Color(0xB3FFFFFF), shape = pillShape)
                 .clickable(onClick = { onAction(MainAction.TestCurrentServer) })
                 .padding(start = 24.dp, end = 92.dp, top = 20.dp, bottom = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
