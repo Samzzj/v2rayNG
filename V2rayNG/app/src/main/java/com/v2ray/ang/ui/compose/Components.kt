@@ -287,6 +287,7 @@ fun ReorderableListItem(
     val elevation by reorderableElevation(isDragging)
     Surface(
         modifier = Modifier.fillMaxWidth(),
+        color = Color.Transparent,
         shadowElevation = elevation
     ) {
         Row(
@@ -310,6 +311,7 @@ fun ReorderableGridItem(
         modifier = Modifier
             .fillMaxWidth()
             .then(with(scope) { reorderableDragHandle() }),
+        color = Color.Transparent,
         shadowElevation = elevation
     ) {
         content()

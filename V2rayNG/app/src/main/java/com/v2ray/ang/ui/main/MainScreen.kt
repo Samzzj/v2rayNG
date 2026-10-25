@@ -162,11 +162,9 @@ fun MainScreen(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(
-                            Color(0xFFD3E2F7),
-                            Color(0xFFE2DAF3),
-                            Color(0xFFF7E6DC)
-                        )
+                        0.0f to Color(0xFFC9DDF6),
+                        0.45f to Color(0xFFDFD3F2),
+                        1.0f to Color(0xFFFADFD0)
                     )
                 )
         ) {
