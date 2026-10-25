@@ -162,9 +162,10 @@ fun MainScreen(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        0.0f to Color(0xFFC9DDF6),
-                        0.45f to Color(0xFFDFD3F2),
-                        1.0f to Color(0xFFFADFD0)
+                        0.0f to Color(0xFFF7DCEA),
+                        0.32f to Color(0xFFEBDDF3),
+                        0.62f to Color(0xFFDFE1F8),
+                        1.0f to Color(0xFFE9DEF4)
                     )
                 )
         ) {
@@ -262,10 +263,10 @@ fun MainScreen(
                             groupTitle = group.remarks,
                             onOpenLink = { url -> onAction(MainAction.OpenSubscriptionLink(url)) },
                             contentPadding = PaddingValues(
-                                start = 0.dp,
-                                top = 0.dp,
-                                end = 0.dp,
-                                bottom = 80.dp
+                                start = 6.dp,
+                                top = 4.dp,
+                                end = 6.dp,
+                                bottom = 92.dp
                             )
                         )
                     }

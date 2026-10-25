@@ -83,23 +83,23 @@ fun MainBottomBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(
-                    elevation = 22.dp,
+                    elevation = 18.dp,
                     shape = pillShape,
                     clip = false,
-                    ambientColor = Color(0x33000000),
-                    spotColor = Color(0x4D000000)
+                    ambientColor = Color(0x1F000000),
+                    spotColor = Color(0x33000000)
                 )
                 .clip(pillShape)
                 .hazeEffect(
                     state = hazeState,
                     style = HazeStyle(
-                        backgroundColor = Color(0x9EFFFFFF),
-                        tint = HazeTint(Color(0x2EFFFFFF)),
-                        blurRadius = 42.dp,
+                        backgroundColor = Color(0xC4FFFFFF),
+                        tint = HazeTint(Color(0x33FFFFFF)),
+                        blurRadius = 40.dp,
                         noiseFactor = 0.03f
                     )
                 )
-                .border(width = 1.2.dp, color = Color(0xB3FFFFFF), shape = pillShape)
+                .border(width = 1.dp, color = Color(0xD9FFFFFF), shape = pillShape)
                 .clickable(onClick = { onAction(MainAction.TestCurrentServer) })
                 .padding(start = 24.dp, end = 92.dp, top = 20.dp, bottom = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
