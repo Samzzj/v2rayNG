@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -81,11 +82,18 @@ fun MainBottomBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .shadow(
+                    elevation = 22.dp,
+                    shape = pillShape,
+                    clip = false,
+                    ambientColor = Color(0x33000000),
+                    spotColor = Color(0x4D000000)
+                )
                 .clip(pillShape)
                 .hazeEffect(
                     state = hazeState,
                     style = HazeStyle(
-                        backgroundColor = Color(0x8CFFFFFF),
+                        backgroundColor = Color(0x9EFFFFFF),
                         tint = HazeTint(Color(0x2EFFFFFF)),
                         blurRadius = 42.dp,
                         noiseFactor = 0.03f
