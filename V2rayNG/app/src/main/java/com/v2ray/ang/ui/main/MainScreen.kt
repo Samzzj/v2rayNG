@@ -63,6 +63,7 @@ fun MainScreen(
     val hazeState = remember { HazeState() }
     var showSearch by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
+    var latencyFilter by rememberSaveable { mutableStateOf(0) }
     var showDelAllConfirm by remember { mutableStateOf(false) }
     var showDelDuplicateConfirm by remember { mutableStateOf(false) }
     var showDelInvalidConfirm by remember { mutableStateOf(false) }
@@ -232,6 +233,11 @@ fun MainScreen(
                         )
                     }
 
+                    LatencyFilterBar(
+                        selected = latencyFilter,
+                        onSelect = { latencyFilter = it }
+                    )
+
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier.fillMaxSize(),
@@ -248,6 +254,7 @@ fun MainScreen(
                             locateTarget = uiState.locateTarget,
                             doubleColumnDisplay = doubleColumnDisplay,
                             searchQuery = searchQuery,
+                            latencyFilter = latencyFilter,
                             lazyListStates = lazyListStates,
                             lazyGridStates = lazyGridStates,
                             onSelectServer = { guid -> onAction(MainAction.SelectServer(guid)) },

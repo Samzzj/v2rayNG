@@ -3,6 +3,8 @@ package com.v2ray.ang.ui.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,6 +82,7 @@ fun GroupPagerPage(
     locateTarget: LocateTarget?,
     doubleColumnDisplay: Boolean,
     searchQuery: String,
+    latencyFilter: Int,
     lazyListStates: MutableMap<String, LazyListState>,
     lazyGridStates: MutableMap<String, LazyGridState>,
     onSelectServer: (String) -> Unit,
@@ -96,7 +99,16 @@ fun GroupPagerPage(
         mainViewModel.serverGroupState(groupId)
     }
     val groupState by groupStateFlow.collectAsStateWithLifecycle()
-    val canReorder = groupId.isNotEmpty() && searchQuery.isEmpty()
+    val canReorder = groupId.isNotEmpty() && searchQuery.isEmpty() && latencyFilter == 0
+    // 延迟分段筛选：0=全部 1=<100ms 2=100..300ms 3=>=300ms 或测速失败
+    val visibleRows = remember(groupState.rows, latencyFilter) {
+        when (latencyFilter) {
+            1 -> groupState.rows.filter { it.testDelayMillis in 1L..99L }
+            2 -> groupState.rows.filter { it.testDelayMillis in 100L..299L }
+            3 -> groupState.rows.filter { it.testDelayMillis >= 300L || it.testDelayMillis < 0L }
+            else -> groupState.rows
+        }
+    }
     val actions = remember(
         onSelectServer,
         onEditServer,
@@ -129,7 +141,7 @@ fun GroupPagerPage(
 
     Box(Modifier.fillMaxSize()) {
         ServerListPage(
-            rows = groupState.rows,
+            rows = visibleRows,
             selectedGuid = selectedGuid,
             locateTarget = locateTarget?.takeIf { it.groupId == groupId },
             canReorder = canReorder,
@@ -508,5 +520,58 @@ internal suspend fun PagerState.navigateToPageOptimized(
         animateScrollToPage(target)
     } else {
         scrollToPage(target)
+    }
+}
+
+/**
+ * 延迟分段筛选条。参考图里的 "IEPL 专线 / 流媒体解锁" 在 v2rayNG 里没有对应数据，
+ * 因此改用真实存在的测速结果分段，保证每个标签点下去都真的会过滤列表。
+ */
+@Composable
+fun LatencyFilterBar(
+    selected: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val options = listOf(
+        0 to "全部",
+        1 to "< 100 ms",
+        2 to "100-300 ms",
+        3 to "> 300 ms"
+    )
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        options.forEach { (value, label) ->
+            val isActive = selected == value
+            val shape = RoundedCornerShape(14.dp)
+            Box(
+                modifier = Modifier
+                    .clip(shape)
+                    .background(if (isActive) Color(0xF2FFFFFF) else Color(0x59FFFFFF))
+                    .border(
+                        width = 1.dp,
+                        color = if (isActive) Color(0xFFFFFFFF) else Color(0x80FFFFFF),
+                        shape = shape
+                    )
+                    .clickable { onSelect(value) }
+                    .padding(horizontal = 14.dp, vertical = 7.dp)
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 13.sp,
+                    fontWeight = if (isActive) FontWeight.Medium else FontWeight.Normal,
+                    color = if (isActive) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+            }
+        }
     }
 }
