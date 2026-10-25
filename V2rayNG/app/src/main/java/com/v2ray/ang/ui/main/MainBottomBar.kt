@@ -2,20 +2,21 @@ package com.v2ray.ang.ui.main
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,9 +32,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.v2ray.ang.R
 import com.v2ray.ang.ui.compose.colorFabActive
 import com.v2ray.ang.ui.compose.colorFabInactiveDark
@@ -45,17 +46,15 @@ import dev.chrisbanes.haze.hazeEffect
 import kotlinx.coroutines.launch
 
 /**
- * iOS 27 风格悬浮玻璃底栏。
+ * 底部唯一控件：一个浮在渐变上的玻璃胶囊启动开关。
  *
- * 布局要点：
- *  - 不再占用 Scaffold 的 bottomBar 槽位，而是浮在列表之上（见 MainScreen 的 Box 叠层），
- *    否则底栏背后没有内容，背景模糊无从体现。
- *  - 列表底部已预留 80dp contentPadding，因此浮层不会遮住最后一项。
- *  - hazeEffect 提供真实背景高斯模糊；Android 11 及以下自动退化为半透明色块。
+ *  - 不再占用 Scaffold 的 bottomBar 槽位，而是叠在列表之上，
+ *    否则背后没有内容，背景模糊无从体现。
+ *  - 列表底部预留了 contentPadding，开关不会遮住最后一张卡片。
+ *  - hazeEffect 提供真实高斯模糊；Android 11 及以下自动退化为半透明色块。
  */
 @Composable
 fun MainBottomBar(
-    displayText: String,
     isRunning: Boolean,
     isDarkTheme: Boolean,
     hazeState: HazeState,
@@ -71,17 +70,22 @@ fun MainBottomBar(
         }
     }
 
-    val pillShape = RoundedCornerShape(34.dp)
+    val pillShape = RoundedCornerShape(32.dp)
+    val accent = when {
+        isRunning -> colorFabActive
+        isDarkTheme -> colorFabInactiveDark
+        else -> colorFabInactiveLight
+    }
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(start = 14.dp, end = 14.dp, top = 34.dp, bottom = 12.dp)
+            .padding(top = 40.dp, bottom = 18.dp),
+        contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
                 .shadow(
                     elevation = 18.dp,
                     shape = pillShape,
@@ -100,52 +104,50 @@ fun MainBottomBar(
                     )
                 )
                 .border(width = 1.dp, color = Color(0xD9FFFFFF), shape = pillShape)
-                .clickable(onClick = { onAction(MainAction.TestCurrentServer) })
-                .padding(start = 24.dp, end = 92.dp, top = 20.dp, bottom = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                text = displayText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.semantics {
-                    contentDescription = displayText
-                }
-            )
-        }
-
-        FloatingActionButton(
-            onClick = {
-                if (!isRunning) {
-                    scope.launch {
-                        rotationAnim.animateTo(
-                            targetValue = 720f,
-                            animationSpec = tween(durationMillis = 3000)
-                        )
+                .clickable {
+                    if (!isRunning) {
+                        scope.launch {
+                            rotationAnim.animateTo(
+                                targetValue = 720f,
+                                animationSpec = tween(durationMillis = 3000)
+                            )
+                        }
                     }
+                    onAction(MainAction.ToggleService)
                 }
-                onAction(MainAction.ToggleService)
-            },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(end = 18.dp, top = 6.dp)
-                .offset(y = (-18).dp),
-            containerColor = if (isRunning) colorFabActive
-            else if (isDarkTheme) colorFabInactiveDark
-            else colorFabInactiveLight
+                .padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = if (isRunning) painterResource(R.drawable.ic_stop_24dp)
-                else painterResource(R.drawable.ic_play_24dp),
-                contentDescription = stringResource(
-                    if (isRunning) R.string.acc_stop else R.string.acc_start
-                ),
-                tint = Color.White,
+            Box(
                 modifier = Modifier
-                    .size(24.dp)
-                    .graphicsLayer { rotationZ = rotationAnim.value }
+                    .size(46.dp)
+                    .clip(CircleShape)
+                    .background(accent),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = if (isRunning) {
+                        painterResource(R.drawable.ic_stop_24dp)
+                    } else {
+                        painterResource(R.drawable.ic_play_24dp)
+                    },
+                    contentDescription = stringResource(
+                        if (isRunning) R.string.acc_stop else R.string.acc_start
+                    ),
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(22.dp)
+                        .graphicsLayer { rotationZ = rotationAnim.value }
+                )
+            }
+            Spacer(Modifier.width(14.dp))
+            Text(
+                text = stringResource(if (isRunning) R.string.acc_stop else R.string.acc_start),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
             )
+            Spacer(Modifier.width(18.dp))
         }
     }
 }

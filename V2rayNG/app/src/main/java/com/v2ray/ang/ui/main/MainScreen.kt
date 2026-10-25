@@ -275,7 +275,6 @@ fun MainScreen(
         }
 
         MainBottomBar(
-            displayText = displayText,
             isRunning = isRunning,
             isDarkTheme = isDarkTheme,
             hazeState = hazeState,
